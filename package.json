@@ -1,0 +1,28 @@
+{
+  "name": "mocha_and_chai_test",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/guagua777/mocha_and_chai_test#readme",
+  "bugs": {
+    "url": "https://github.com/guagua777/mocha_and_chai_test/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/guagua777/mocha_and_chai_test.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.ts",
+  "scripts": {
+    "test": "mocha -require ts-node/register test/**.spec.ts"
+  },
+  "devDependencies": {
+    "@types/chai": "^5.2.3",
+    "@types/mocha": "^10.0.10",
+    "chai": "^6.2.2",
+    "mocha": "^11.7.5",
+    "ts-node": "^10.9.2",
+    "typescript": "^6.0.2"
+  }
+}
