@@ -15,7 +15,7 @@
   "type": "commonjs",
   "main": "index.ts",
   "scripts": {
-    "test": "mocha -require ts-node/register test/**.spec.ts"
+    "test": "nyc mocha -require ts-node/register test/**.spec.ts"
   },
   "devDependencies": {
     "@types/chai": "^5.2.3",
@@ -24,5 +24,8 @@
     "mocha": "^11.7.5",
     "ts-node": "^10.9.2",
     "typescript": "^6.0.2"
+  },
+  "dependencies": {
+    "nyc": "^18.0.0"
   }
 }
