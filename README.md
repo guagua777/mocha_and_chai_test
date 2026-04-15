@@ -4,9 +4,10 @@
 2. https://mochajs.org/
 3. https://www.chaijs.com/
 4. https://sinonjs.org/
-5. https://www.youtube.com/watch?v=tR8Kghw4HpA
-6. https://github.com/kyprogramming/mocha-chai-unit-testing
-7. https://www.bilibili.com/video/BV1eB4y1g7By
+5. https://jsonplaceholder.typicode.com/
+6. https://www.youtube.com/watch?v=tR8Kghw4HpA
+7. https://github.com/kyprogramming/mocha-chai-unit-testing
+   
 
 
 

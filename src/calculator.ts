@@ -26,6 +26,15 @@ class Calculator{
     logMessage(msg:string){
         console.log(msg);
     }
+
+
+    asyncFunctionPromise(){
+       return new Promise((resolve, reject)=>{
+        setTimeout(()=>{
+            resolve(4);
+        },1000);
+       })
+    }
 }
 
 
