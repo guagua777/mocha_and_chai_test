@@ -9,4 +9,14 @@
 
 
 
-### 主线
+# 版本问题
+5 个测试全部通过。
+
+总结修改：
+
+1. 降级 chai 到 v4（v6 是纯 ESM，不兼容 ts-node + CommonJS）
+2. 恢复 import { assert, expect, should } from "chai" 的原始导入方式
+3. 删除多余的 chai-should.d.ts 文件（不再需要）
+4. 修复 assert.typeOf(arrData, 'array') → assert.isArray(arrData)
+
+# 主线
