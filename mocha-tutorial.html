@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>Mocha 完整教程</title>
+<style>
+  body { font-family: 'Helvetica Neue', Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 40px; color: #333; line-height: 1.7; }
+  h1 { color: #8d6748; border-bottom: 3px solid #8d6748; padding-bottom: 10px; font-size: 2.2em; }
+  h2 { color: #5a3e2b; border-left: 5px solid #8d6748; padding-left: 12px; margin-top: 40px; font-size: 1.6em; }
+  h3 { color: #7a5c3e; margin-top: 25px; font-size: 1.2em; }
+  pre { background: #f5f2f0; border: 1px solid #ddd; border-radius: 6px; padding: 16px; overflow-x: auto; font-size: 0.9em; }
+  code { background: #f5f2f0; padding: 2px 6px; border-radius: 3px; font-family: 'Courier New', monospace; font-size: 0.9em; }
+  pre code { background: none; padding: 0; }
+  .tip { background: #fff8e1; border-left: 4px solid #ffc107; padding: 12px 16px; margin: 16px 0; border-radius: 0 6px 6px 0; }
+  .warning { background: #fce4ec; border-left: 4px solid #e91e63; padding: 12px 16px; margin: 16px 0; border-radius: 0 6px 6px 0; }
+  table { border-collapse: collapse; width: 100%; margin: 16px 0; }
+  th { background: #8d6748; color: white; padding: 10px 14px; text-align: left; }
+  td { border: 1px solid #ddd; padding: 9px 14px; }
+  tr:nth-child(even) { background: #fafafa; }
+  .toc { background: #f9f6f3; border: 1px solid #ddd; padding: 20px 30px; border-radius: 8px; margin-bottom: 40px; }
+  .toc a { color: #8d6748; text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+  .toc li { margin: 5px 0; }
+  .badge { display: inline-block; background: #8d6748; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.8em; margin-left: 6px; }
+  @media print { body { padding: 20px; } }
+</style>
+</head>
+<body>
+
+<h1>Mocha 完整教程</h1>
+<p style="color:#888; font-size:0.95em;">基于 mochajs.org 官方文档 · 中文版 · 2026</p>
+
+<div class="toc">
+  <strong>目录</strong>
+  <ol>
+    <li><a href="#intro">Mocha 简介</a></li>
+    <li><a href="#install">安装</a></li>
+    <li><a href="#getting-started">快速开始</a></li>
+    <li><a href="#test-structure">测试结构</a></li>
+    <li><a href="#hooks">钩子（Hooks）</a></li>
+    <li><a href="#pending">待定测试（Pending Tests）</a></li>
+    <li><a href="#exclusive">独占测试（only）</a></li>
+    <li><a href="#inclusive">跳过测试（skip）</a></li>
+    <li><a href="#retry">重试测试</a></li>
+    <li><a href="#async">异步测试</a></li>
+    <li><a href="#sync">同步测试</a></li>
+    <li><a href="#arrow">箭头函数</a></li>
+    <li><a href="#reporters">报告器（Reporters）</a></li>
+    <li><a href="#config">配置文件</a></li>
+    <li><a href="#cli">命令行选项</a></li>
+    <li><a href="#interfaces">接口（Interfaces）</a></li>
+    <li><a href="#assertions">断言库</a></li>
+    <li><a href="#timeouts">超时设置</a></li>
+    <li><a href="#diffs">差异输出</a></li>
+    <li><a href="#coverage">测试覆盖率</a></li>
+    <li><a href="#best-practices">最佳实践</a></li>
+  </ol>
+</div>
+
+<!-- 第1章 -->
+<h2 id="intro">1. Mocha 简介</h2>
+<p>Mocha 是一个功能丰富的 JavaScript 测试框架，运行在 Node.js 和浏览器中，让异步测试变得简单而有趣。Mocha 按顺序串行运行测试，提供灵活准确的报告，并将未捕获的异常映射到正确的测试用例。</p>
+<p>主要特性：</p>
+<ul>
+  <li>支持浏览器和 Node.js</li>
+  <li>支持异步测试（包括 Promise 和 async/await）</li>
+  <li>可配置的测试超时</li>
+  <li>支持多种断言库（assert、chai、should.js 等）</li>
+  <li>丰富的报告器（spec、dot、nyan、tap 等）</li>
+  <li>支持 before/after/beforeEach/afterEach 钩子</li>
+  <li>支持 only/skip 控制测试执行</li>
+  <li>支持测试重试</li>
+</ul>
+
+<!-- 第2章 -->
+<h2 id="install">2. 安装</h2>
+<h3>全局安装</h3>
+<pre><code>npm install --global mocha</code></pre>
+<h3>作为开发依赖安装（推荐）</h3>
+<pre><code>npm install --save-dev mocha</code></pre>
+<h3>验证安装</h3>
+<pre><code>npx mocha --version</code></pre>
+<div class="tip">推荐将 mocha 安装为项目的 devDependency，并通过 <code>npx mocha</code> 或 npm scripts 运行，避免全局版本冲突。</div>
+
+<!-- 第3章 -->
+<h2 id="getting-started">3. 快速开始</h2>
+<p>创建项目结构：</p>
+<pre><code>mkdir my-project && cd my-project
+npm init -y
+npm install --save-dev mocha</code></pre>
+<p>创建测试文件 <code>test/test.mjs</code>：</p>
+<pre><code>import assert from 'node:assert/strict';
+
+describe('Array', function () {
+  describe('#indexOf()', function () {
+    it('should return -1 when the value is not present', function () {
+      assert.equal([1, 2, 3].indexOf(4), -1);
+    });
+  });
+});</code></pre>
+<p>在 <code>package.json</code> 中添加测试脚本：</p>
+<pre><code>{
+  "scripts": {
+    "test": "mocha"
+  }
+}</code></pre>
+<p>运行测试：</p>
+<pre><code>npm test</code></pre>
+<p>输出示例：</p>
+<pre><code>  Array
+    #indexOf()
+      ✓ should return -1 when the value is not present
+
+  1 passing (9ms)</code></pre>
+
+<!-- 第4章 -->
+<h2 id="test-structure">4. 测试结构</h2>
+<p>Mocha 使用 <code>describe</code> 和 <code>it</code> 来组织测试：</p>
+<ul>
+  <li><code>describe(name, fn)</code>：定义测试套件（可嵌套）</li>
+  <li><code>it(name, fn)</code>：定义单个测试用例</li>
+  <li><code>context</code>：<code>describe</code> 的别名</li>
+  <li><code>specify</code>：<code>it</code> 的别名</li>
+</ul>
+<pre><code>describe('Calculator', function () {
+  describe('add()', function () {
+    it('should return 3 when adding 1 and 2', function () {
+      assert.equal(add(1, 2), 3);
+    });
+
+    it('should return 0 when adding -1 and 1', function () {
+      assert.equal(add(-1, 1), 0);
+    });
+  });
+
+  describe('subtract()', function () {
+    it('should return 1 when subtracting 1 from 2', function () {
+      assert.equal(subtract(2, 1), 1);
+    });
+  });
+});</code></pre>
+
+<!-- 第5章 -->
+<h2 id="hooks">5. 钩子（Hooks）</h2>
+<p>Mocha 提供四种钩子，用于在测试前后执行设置和清理操作：</p>
+<table>
+  <tr><th>钩子</th><th>执行时机</th></tr>
+  <tr><td><code>before()</code></td><td>当前 describe 块中所有测试运行之前执行一次</td></tr>
+  <tr><td><code>after()</code></td><td>当前 describe 块中所有测试运行之后执行一次</td></tr>
+  <tr><td><code>beforeEach()</code></td><td>当前 describe 块中每个测试运行之前执行</td></tr>
+  <tr><td><code>afterEach()</code></td><td>当前 describe 块中每个测试运行之后执行</td></tr>
+</table>
+<pre><code>describe('Database', function () {
+  let db;
+
+  before(function () {
+    // 在所有测试前连接数据库
+    db = connectToDatabase();
+  });
+
+  after(function () {
+    // 在所有测试后断开连接
+    db.disconnect();
+  });
+
+  beforeEach(function () {
+    // 每个测试前清空数据
+    db.clear();
+  });
+
+  afterEach(function () {
+    // 每个测试后记录日志
+    console.log('test finished');
+  });
+
+  it('should save a record', function () {
+    db.save({ id: 1 });
+    assert.equal(db.count(), 1);
+  });
+});</code></pre>
+
+<h3>根级钩子（Root Hooks）</h3>
+<p>在所有 describe 块外定义的钩子称为根级钩子，作用于所有测试文件：</p>
+<pre><code>// test/hooks.mjs
+export const mochaHooks = {
+  beforeAll() {
+    // 在所有测试套件之前运行一次
+  },
+  afterAll() {
+    // 在所有测试套件之后运行一次
+  },
+  beforeEach() {
+    // 在每个测试之前运行
+  },
+  afterEach() {
+    // 在每个测试之后运行
+  }
+};</code></pre>
+<p>在配置文件中注册：</p>
+<pre><code>// .mocharc.cjs
+module.exports = {
+  require: ['test/hooks.mjs']
+};</code></pre>
+
+<!-- 第6章 -->
+<h2 id="pending">6. 待定测试（Pending Tests）</h2>
+<p>没有回调函数的测试被视为"待定"（pending），用于标记尚未实现的测试：</p>
+<pre><code>describe('Array', function () {
+  describe('#indexOf()', function () {
+    // 待定测试 - 没有回调
+    it('should return -1 when the value is not present');
+  });
+});</code></pre>
+<p>待定测试会在报告中显示为 pending 状态，不会导致测试失败。</p>
+
+<!-- 第7章 -->
+<h2 id="exclusive">7. 独占测试（only）</h2>
+<p>使用 <code>.only</code> 可以只运行指定的测试套件或测试用例：</p>
+<pre><code>// 只运行这个 describe 块
+describe.only('Array', function () {
+  it('should work', function () { /* ... */ });
+});
+
+// 只运行这个 it
+describe('Array', function () {
+  it.only('should return -1', function () {
+    assert.equal([1,2,3].indexOf(4), -1);
+  });
+
+  it('this test will not run', function () { /* ... */ });
+});</code></pre>
+<div class="warning">注意：<code>.only</code> 仅用于开发调试，提交代码前应移除，否则 CI 中其他测试不会运行。</div>
+<p>可以链式使用多个 <code>.only</code>：</p>
+<pre><code>describe('Array', function () {
+  it.only('test 1', function () { /* runs */ });
+  it.only('test 2', function () { /* runs */ });
+  it('test 3', function () { /* skipped */ });
+});</code></pre>
+
+<!-- 第8章 -->
+<h2 id="inclusive">8. 跳过测试（skip）</h2>
+<p>使用 <code>.skip</code> 跳过指定的测试套件或测试用例：</p>
+<pre><code>// 跳过整个 describe 块
+describe.skip('broken feature', function () {
+  it('should work', function () { /* skipped */ });
+});
+
+// 跳过单个测试
+describe('Array', function () {
+  it.skip('should return -1', function () {
+    // 这个测试会被跳过
+  });
+});</code></pre>
+<p>也可以在测试内部动态跳过：</p>
+<pre><code>it('should only run on macOS', function () {
+  if (process.platform !== 'darwin') {
+    this.skip(); // 动态跳过
+  }
+  // macOS 特定测试...
+});</code></pre>
+
+<!-- 第9章 -->
+<h2 id="retry">9. 重试测试</h2>
+<p>对于不稳定的测试（如网络请求），可以设置重试次数：</p>
+<pre><code>describe('flaky network tests', function () {
+  this.retries(4); // 最多重试4次
+
+  it('should eventually succeed', function () {
+    // 不稳定的测试
+  });
+});</code></pre>
+<p>也可以对单个测试设置重试：</p>
+<pre><code>it('should connect to server', function () {
+  this.retries(3);
+  // ...
+});</code></pre>
+<div class="tip">重试功能适用于集成测试和端到端测试，单元测试应避免使用，因为不稳定的单元测试通常意味着代码有问题。</div>
+
+
+<!-- 第10章 -->
+<h2 id="async">10. 异步测试</h2>
+<h3>使用回调（done）</h3>
+<pre><code>describe('User', function () {
+  it('should save async', function (done) {
+    User.save({ name: 'Alice' }, function (err) {
+      if (err) return done(err);
+      done();
+    });
+  });
+});</code></pre>
+
+<h3>使用 Promise</h3>
+<pre><code>it('should fetch user', function () {
+  return fetchUser(1).then(function (user) {
+    assert.equal(user.name, 'Alice');
+  });
+});</code></pre>
+
+<h3>使用 async/await（推荐）</h3>
+<pre><code>it('should fetch user', async function () {
+  const user = await fetchUser(1);
+  assert.equal(user.name, 'Alice');
+});</code></pre>
+
+<div class="tip">async/await 是最简洁的异步测试写法，推荐优先使用。</div>
+
+<!-- 第11章 -->
+<h2 id="sync">11. 同步测试</h2>
+<p>同步测试省略回调参数即可，Mocha 会自动继续执行下一个测试：</p>
+<pre><code>describe('Array', function () {
+  it('should return -1 when not found', function () {
+    assert.equal([1, 2, 3].indexOf(4), -1);
+  });
+});</code></pre>
+
+<!-- 第12章 -->
+<h2 id="arrow">12. 箭头函数</h2>
+<p>Mocha 不推荐使用箭头函数，因为箭头函数会绑定外部的 <code>this</code>，导致无法访问 Mocha 上下文（如 <code>this.timeout()</code>、<code>this.skip()</code>、<code>this.retries()</code>）：</p>
+<pre><code>// 不推荐
+it('should work', () => {
+  this.timeout(1000); // 错误！this 不是 Mocha 上下文
+});
+
+// 推荐
+it('should work', function () {
+  this.timeout(1000); // 正确
+});</code></pre>
+<div class="warning">如果不需要使用 Mocha 上下文，箭头函数可以使用，但为了一致性，建议统一使用普通函数。</div>
+
+<!-- 第13章 -->
+<h2 id="reporters">13. 报告器（Reporters）</h2>
+<p>通过 <code>--reporter</code> 选项指定报告器：</p>
+<pre><code>npx mocha --reporter spec    # 默认，详细输出
+npx mocha --reporter dot     # 简洁点状输出
+npx mocha --reporter min     # 最小化输出
+npx mocha --reporter tap     # TAP 格式
+npx mocha --reporter json    # JSON 格式
+npx mocha --reporter nyan    # 彩虹猫（有趣）</code></pre>
+
+<table>
+  <tr><th>报告器</th><th>说明</th></tr>
+  <tr><td>spec</td><td>默认，层级缩进显示所有测试</td></tr>
+  <tr><td>dot</td><td>每个测试显示一个点，失败显示 F</td></tr>
+  <tr><td>min</td><td>只显示摘要和失败信息</td></tr>
+  <tr><td>tap</td><td>TAP 协议格式，适合 CI 集成</td></tr>
+  <tr><td>json</td><td>JSON 格式，适合程序解析</td></tr>
+  <tr><td>json-stream</td><td>流式 JSON，每行一个事件</td></tr>
+  <tr><td>landing</td><td>飞机降落动画</td></tr>
+  <tr><td>nyan</td><td>彩虹猫动画</td></tr>
+</table>
+
+<h3>第三方报告器</h3>
+<pre><code>npm install --save-dev mochawesome
+npx mocha --reporter mochawesome</code></pre>
+
+<!-- 第14章 -->
+<h2 id="config">14. 配置文件</h2>
+<p>Mocha 支持多种配置文件格式，按优先级查找：</p>
+<ul>
+  <li><code>.mocharc.cjs</code> / <code>.mocharc.js</code></li>
+  <li><code>.mocharc.yaml</code> / <code>.mocharc.yml</code></li>
+  <li><code>.mocharc.json</code> / <code>.mocharc.jsonc</code></li>
+  <li><code>package.json</code> 中的 <code>mocha</code> 字段</li>
+</ul>
+
+<h3>.mocharc.json 示例</h3>
+<pre><code>{
+  "spec": "test/**/*.spec.js",
+  "reporter": "spec",
+  "timeout": 5000,
+  "require": ["./test/setup.js"],
+  "recursive": true
+}</code></pre>
+
+<h3>.mocharc.yml 示例</h3>
+<pre><code>spec: test/**/*.spec.js
+reporter: spec
+timeout: 5000
+require:
+  - ./test/setup.js
+recursive: true</code></pre>
+
+<h3>package.json 中配置</h3>
+<pre><code>{
+  "mocha": {
+    "spec": "test/**/*.spec.js",
+    "timeout": 5000,
+    "reporter": "spec"
+  }
+}</code></pre>
+
+<!-- 第15章 -->
+<h2 id="cli">15. 命令行选项</h2>
+<table>
+  <tr><th>选项</th><th>说明</th></tr>
+  <tr><td><code>--spec &lt;pattern&gt;</code></td><td>指定测试文件（默认 test/*.{js,mjs,cjs}）</td></tr>
+  <tr><td><code>--reporter &lt;name&gt;</code></td><td>指定报告器</td></tr>
+  <tr><td><code>--timeout &lt;ms&gt;</code></td><td>设置超时时间（默认 2000ms）</td></tr>
+  <tr><td><code>--recursive</code></td><td>递归查找子目录中的测试文件</td></tr>
+  <tr><td><code>--require &lt;module&gt;</code></td><td>在测试前 require 指定模块</td></tr>
+  <tr><td><code>--watch</code> / <code>-w</code></td><td>监听文件变化，自动重新运行</td></tr>
+  <tr><td><code>--grep &lt;pattern&gt;</code></td><td>只运行匹配正则的测试</td></tr>
+  <tr><td><code>--fgrep &lt;string&gt;</code></td><td>只运行包含指定字符串的测试</td></tr>
+  <tr><td><code>--invert</code></td><td>反转 --grep/--fgrep 的匹配</td></tr>
+  <tr><td><code>--bail</code></td><td>第一个失败后停止运行</td></tr>
+  <tr><td><code>--exit</code></td><td>测试完成后强制退出进程</td></tr>
+  <tr><td><code>--parallel</code></td><td>并行运行测试文件</td></tr>
+  <tr><td><code>--retries &lt;n&gt;</code></td><td>失败测试重试次数</td></tr>
+  <tr><td><code>--no-timeouts</code></td><td>禁用超时</td></tr>
+</table>
+
+<h3>常用示例</h3>
+<pre><code># 只运行包含 "login" 的测试
+npx mocha --grep "login"
+
+# 监听模式
+npx mocha --watch
+
+# 递归运行所有测试
+npx mocha --recursive
+
+# 并行运行（加速大型测试套件）
+npx mocha --parallel</code></pre>
+
+<!-- 第16章 -->
+<h2 id="interfaces">16. 接口（Interfaces）</h2>
+<p>Mocha 支持多种测试接口风格：</p>
+
+<h3>BDD（默认）</h3>
+<pre><code>describe('Array', function () {
+  before(function () { /* ... */ });
+  it('should work', function () { /* ... */ });
+});</code></pre>
+
+<h3>TDD</h3>
+<pre><code>suite('Array', function () {
+  suiteSetup(function () { /* before all */ });
+  suiteTeardown(function () { /* after all */ });
+  setup(function () { /* before each */ });
+  teardown(function () { /* after each */ });
+  test('indexOf', function () { /* ... */ });
+});</code></pre>
+
+<h3>Exports</h3>
+<pre><code>module.exports = {
+  before: function () { /* ... */ },
+  'Array': {
+    '#indexOf()': {
+      'should return -1': function () {
+        assert.equal([1,2,3].indexOf(4), -1);
+      }
+    }
+  }
+};</code></pre>
+
+<h3>QUnit</h3>
+<pre><code>suite('Array');
+test('#indexOf()', function () {
+  assert.equal([1,2,3].indexOf(4), -1);
+});</code></pre>
+
+<p>通过 <code>--ui</code> 选项切换接口：</p>
+<pre><code>npx mocha --ui tdd</code></pre>
+
+<!-- 第17章 -->
+<h2 id="assertions">17. 断言库</h2>
+<p>Mocha 不内置断言库，可以搭配任意断言库使用：</p>
+
+<h3>Node.js 内置 assert</h3>
+<pre><code>import assert from 'node:assert/strict';
+
+it('should equal', function () {
+  assert.equal(1 + 1, 2);
+  assert.deepEqual({ a: 1 }, { a: 1 });
+  assert.throws(() => { throw new Error('oops'); });
+});</code></pre>
+
+<h3>Chai（推荐）</h3>
+<pre><code>import { expect, should, assert } from 'chai';
+
+// expect 风格
+expect(1 + 1).to.equal(2);
+expect([1, 2, 3]).to.include(2);
+expect('hello').to.be.a('string');
+
+// should 风格
+should();
+(1 + 1).should.equal(2);
+
+// assert 风格
+assert.equal(1 + 1, 2);
+assert.isArray([1, 2, 3]);</code></pre>
+
+<h3>Should.js</h3>
+<pre><code>import 'should';
+(1 + 1).should.equal(2);</code></pre>
+
+<h3>Expect.js</h3>
+<pre><code>import expect from 'expect.js';
+expect(1 + 1).to.equal(2);</code></pre>
+
+<!-- 第18章 -->
+<h2 id="timeouts">18. 超时设置</h2>
+<p>默认超时为 2000ms，可以在不同级别设置：</p>
+
+<h3>全局设置</h3>
+<pre><code>npx mocha --timeout 5000</code></pre>
+
+<h3>套件级别</h3>
+<pre><code>describe('slow tests', function () {
+  this.timeout(5000); // 5秒
+
+  it('should finish in time', function (done) {
+    setTimeout(done, 3000);
+  });
+});</code></pre>
+
+<h3>单个测试</h3>
+<pre><code>it('should be slow', function (done) {
+  this.timeout(10000); // 10秒
+  setTimeout(done, 8000);
+});</code></pre>
+
+<h3>禁用超时</h3>
+<pre><code>this.timeout(0); // 0 表示禁用超时</code></pre>
+
+<!-- 第19章 -->
+<h2 id="diffs">19. 差异输出</h2>
+<p>当断言失败时，Mocha 会自动显示期望值和实际值的差异：</p>
+<pre><code>AssertionError: expected { a: 1, b: 2 } to deeply equal { a: 1, b: 3 }
+  + expected - actual
+
+   {
+     "a": 1,
+  -  "b": 2
+  +  "b": 3
+   }</code></pre>
+<p>通过 <code>--no-diff</code> 可以禁用差异输出。</p>
+
+<!-- 第20章 -->
+<h2 id="coverage">20. 测试覆盖率</h2>
+<p>使用 <code>nyc</code>（Istanbul 的命令行工具）生成覆盖率报告：</p>
+<pre><code>npm install --save-dev nyc</code></pre>
+<p>在 <code>package.json</code> 中配置：</p>
+<pre><code>{
+  "scripts": {
+    "test": "mocha",
+    "coverage": "nyc mocha"
+  },
+  "nyc": {
+    "reporter": ["text", "html", "lcov"],
+    "include": ["src/**/*.js"],
+    "exclude": ["test/**/*.js"]
+  }
+}</code></pre>
+<p>运行覆盖率：</p>
+<pre><code>npm run coverage</code></pre>
+<p>输出示例：</p>
+<pre><code>----------|---------|----------|---------|---------|
+File      | % Stmts | % Branch | % Funcs | % Lines |
+----------|---------|----------|---------|---------|
+All files |   85.71 |    66.67 |     100 |   85.71 |
+ index.js |   85.71 |    66.67 |     100 |   85.71 |
+----------|---------|----------|---------|---------|</code></pre>
+
+<!-- 第21章 -->
+<h2 id="best-practices">21. 最佳实践</h2>
+<ul>
+  <li><strong>测试文件命名</strong>：使用 <code>*.spec.js</code> 或 <code>*.test.js</code> 后缀，放在 <code>test/</code> 目录下</li>
+  <li><strong>每个测试只验证一件事</strong>：保持测试简单、聚焦</li>
+  <li><strong>使用描述性名称</strong>：<code>it('should return -1 when value not found')</code> 而非 <code>it('test1')</code></li>
+  <li><strong>避免测试间依赖</strong>：每个测试应独立运行，使用 beforeEach 重置状态</li>
+  <li><strong>不要在生产代码中留 .only</strong>：提交前检查并移除</li>
+  <li><strong>合理设置超时</strong>：异步测试设置足够的超时时间</li>
+  <li><strong>使用 async/await</strong>：比回调和 Promise 链更清晰</li>
+  <li><strong>分离测试关注点</strong>：单元测试、集成测试、端到端测试分开组织</li>
+</ul>
+
+<h3>推荐项目结构</h3>
+<pre><code>my-project/
+├── src/
+│   ├── calculator.js
+│   └── user.js
+├── test/
+│   ├── unit/
+│   │   ├── calculator.spec.js
+│   │   └── user.spec.js
+│   ├── integration/
+│   │   └── api.spec.js
+│   └── hooks.js
+├── .mocharc.json
+└── package.json</code></pre>
+
+<h3>完整示例</h3>
+<pre><code>// src/calculator.js
+export function add(a, b) { return a + b; }
+export function divide(a, b) {
+  if (b === 0) throw new Error('Division by zero');
+  return a / b;
+}
+
+// test/calculator.spec.js
+import { expect } from 'chai';
+import { add, divide } from '../src/calculator.js';
+
+describe('Calculator', function () {
+  describe('add()', function () {
+    it('should add two positive numbers', function () {
+      expect(add(1, 2)).to.equal(3);
+    });
+
+    it('should handle negative numbers', function () {
+      expect(add(-1, 1)).to.equal(0);
+    });
+  });
+
+  describe('divide()', function () {
+    it('should divide correctly', function () {
+      expect(divide(10, 2)).to.equal(5);
+    });
+
+    it('should throw on division by zero', function () {
+      expect(() => divide(1, 0)).to.throw('Division by zero');
+    });
+  });
+});</code></pre>
+
+<hr style="margin-top:50px; border-color:#ddd;">
+<p style="text-align:center; color:#aaa; font-size:0.85em;">
+  Mocha 完整教程 · 基于 <a href="https://mochajs.org" style="color:#8d6748;">mochajs.org</a> 官方文档 · 2026
+</p>
+
+</body>
+</html>
